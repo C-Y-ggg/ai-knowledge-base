@@ -1,0 +1,20 @@
+# 环境变量与密钥
+.env
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 上传的文件与数据库
+uploaded_files/
+*.db
+*.sqlite3
+
+# 桌面打包产物
+dist/
+build/
+*.spec
+
+# 编辑器配置
+.vscode/
+.idea/
