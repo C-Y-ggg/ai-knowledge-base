@@ -31,19 +31,7 @@ def create_knowledge_from_file(db: Session, file_name: str, file_path: str):
 
 # ==================== RRF 融合算法 ====================
 def rrf_fusion(vector_results: list, keyword_results: list, k: int = 60, top_n: int = 10):
-    """
-    RRF (Reciprocal Rank Fusion) 倒数排名融合算法
 
-    参数说明：
-    - vector_results: 向量检索返回的 Chunk 列表（已按相似度排序）
-    - keyword_results: 关键词检索返回的 Chunk 列表（已按相关度排序）
-    - k: 平滑参数，通常取 60。k 越大，排名靠后的文档得分衰减越慢。
-    - top_n: 最终返回几条
-
-    原理：
-    对于每个文档，它的得分 = 它在向量路中的 1/(k+排名) + 它在关键词路中的 1/(k+排名)
-    两路都排名靠前的文档，得分会叠加，脱颖而出。
-    """
     scores = {}  # 记录每个 chunk_id 的总分
     chunks_map = {}  # 记录每个 chunk_id 对应的 Chunk 对象
 
