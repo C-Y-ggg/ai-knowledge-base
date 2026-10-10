@@ -29,7 +29,7 @@
 
 - **前端**：HTML5 + JavaScript + PySide6
 - **后端**：FastAPI (Python)
-- **数据库**：PostgreSQL + pgvector
+- **数据库**： PostgreSQL + pgvector
 - **消息队列**：Redis
 - **文档解析**：PyMuPDF, python-docx, pandas
 - **大模型**：智谱 GLM-5.3-Flash (对话) + 硅基流动 BAAI/bge-m3 (向量化) + BAAI/bge-reranker-v2-m3 (重排序)
