@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>RAG · AI 知识库</title>
-<!--    <script src="./marked.min.js"></script>-->
     <script>
         /**
  * marked v15.0.12 - a markdown parser
@@ -90,42 +89,41 @@ if(__exports != exports)module.exports = exports;return module.exports}));
 
         .main-container { display: flex; flex: 1; overflow: hidden; }
 
-        /* 左侧聊天区 */
+        /* 左侧会话侧边栏 */
+        .sidebar { width: 260px; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 16px; border-bottom: 1px solid #e2e8f0; }
+        .btn-new-chat { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-new-chat:hover { background: #2563eb; }
+        .conversation-list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .conversation-item { padding: 12px; border-radius: 8px; cursor: pointer; font-size: 14px; color: #475569; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; border: 1px solid transparent; }
+        .conversation-item:hover { background: #f1f5f9; }
+        .conversation-item.active { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; font-weight: 600; }
+        .conversation-item .title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+        .btn-delete-conv { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px; padding: 2px 6px; border-radius: 4px; display: none; }
+        .conversation-item:hover .btn-delete-conv { display: block; }
+        .btn-delete-conv:hover { background: #fee2e2; }
+
+        /* 中间聊天区 */
         .chat-container { flex: 3; display: flex; flex-direction: column; background: #f8fafc; position: relative; }
         .chat-history { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
 
-        /* 消息气泡 */
         .message { max-width: 820px; width: fit-content; padding: 14px 18px; border-radius: 16px; line-height: 1.6; font-size: 15px; word-wrap: break-word; animation: fadeIn 0.3s ease-out; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .message.user { align-self: flex-end; background: #3b82f6; color: #ffffff; border-bottom-right-radius: 4px; white-space: pre-wrap; }
-
-        /* 🤖 AI 气泡：结构 + 可读性核心 */
         .message.ai { align-self: flex-start; background: #ffffff; color: #334155; border-bottom-left-radius: 4px; border: 1px solid #e2e8f0; line-height: 1.85; font-size: 15px; }
-        .message.ai > *:last-child { margin-bottom: 0 !important; }
 
+        /* AI 气泡内部元素 */
         .message.ai p { margin: 0 0 12px 0; }
-        .message.ai h1, .message.ai h2, .message.ai h3, .message.ai h4 { margin: 18px 0 10px 0; color: #0f172a; font-weight: 700; line-height: 1.4; }
-        .message.ai h1 { font-size: 1.3em; }
+        .message.ai h1, .message.ai h2, .message.ai h3 { margin: 18px 0 10px 0; color: #0f172a; font-weight: 700; }
         .message.ai h2 { font-size: 1.15em; padding-left: 10px; border-left: 4px solid #3b82f6; }
-        .message.ai h3 { font-size: 1.05em; color: #1d4ed8; }
         .message.ai ul, .message.ai ol { margin: 10px 0 14px 0; padding-left: 24px; }
-        .message.ai li { margin-bottom: 8px; }
-        .message.ai li::marker { color: #3b82f6; }
         .message.ai strong { color: #0f172a; font-weight: 700; background: linear-gradient(transparent 65%, #dbeafe 65%); padding: 0 2px; }
-        .message.ai blockquote { border-left: 4px solid #3b82f6; background: #f1f5f9; margin: 12px 0; padding: 10px 15px; color: #475569; border-radius: 0 8px 8px 0; }
-
-        /* 🟢 引用编号徽章：替代裸 [1] */
-        .ref-badge { display: inline-block; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 6px; padding: 0 6px; font-size: 12px; font-weight: 700; cursor: pointer; margin: 0 2px; vertical-align: 1px; line-height: 1.6; transition: all .15s; user-select: none; }
+        .message.ai blockquote { border-left: 4px solid #3b82f6; background: #f1f5f9; margin: 12px 0; padding: 10px 15px; color: #475569; }
+        .message.ai pre { background: #0f172a; color: #e2e8f0; padding: 14px 16px; border-radius: 10px; overflow-x: auto; margin: 12px 0; font-family: Consolas, monospace; font-size: 13px; }
+        .message.ai code { font-family: Consolas, monospace; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: #dc2626; }
+        .message.ai pre code { background: transparent; padding: 0; color: inherit; }
+        .ref-badge { display: inline-block; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 6px; padding: 0 6px; font-size: 12px; font-weight: 700; cursor: pointer; margin: 0 2px; transition: all .15s; user-select: none; }
         .ref-badge:hover { background: #3b82f6; color: #fff; transform: translateY(-1px); }
-
-        /* 代码块 */
-        .message.ai pre { background: #0f172a; color: #e2e8f0; padding: 14px 16px; border-radius: 10px; overflow-x: auto; margin: 12px 0; font-family: Consolas, Monaco, "Courier New", monospace; font-size: 13px; line-height: 1.6; border: 1px solid #1e293b; }
-        .message.ai code { font-family: Consolas, Monaco, monospace; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: #dc2626; }
-        .message.ai pre code { background: transparent; padding: 0; color: inherit; font-size: inherit; }
-        .message.ai table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 14px; display: block; overflow-x: auto; }
-        .message.ai th, .message.ai td { border: 1px solid #e2e8f0; padding: 8px 14px; text-align: left; }
-        .message.ai th { background: #f1f5f9; font-weight: 600; white-space: nowrap; }
-
         .typing-cursor::after { content: '▋'; margin-left: 2px; color: #3b82f6; animation: blink 1s step-end infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
@@ -138,17 +136,15 @@ if(__exports != exports)module.exports = exports;return module.exports}));
         .status-dot.completed { background: #10b981; }
         .status-dot.failed { background: #ef4444; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-
         .input-row { display: flex; gap: 10px; align-items: center; }
         .input-row input[type="text"] { flex: 1; padding: 14px 20px; background: #f1f5f9; border: 1px solid transparent; border-radius: 24px; outline: none; font-size: 15px; transition: all 0.2s; }
         .input-row input[type="text"]:focus { background: #ffffff; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
-
-        .btn { padding: 14px 24px; border: none; border-radius: 24px; cursor: pointer; font-size: 15px; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: center; white-space: nowrap; }
-        .btn-send { background: #3b82f6; color: white; min-width: 96px; }
-        .btn-send:hover:not(:disabled) { background: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+        .input-row input[type="text"]:disabled { background: #e2e8f0; cursor: not-allowed; }
+        .btn { padding: 14px 24px; border: none; border-radius: 24px; cursor: pointer; font-size: 15px; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .btn-send { background: #3b82f6; color: white; }
+        .btn-send:hover:not(:disabled) { background: #2563eb; }
         .btn-send:disabled { background: #cbd5e1; cursor: not-allowed; }
         .btn-upload { background: #f1f5f9; color: #475569; padding: 14px 16px; font-size: 18px; }
-        .btn-upload:hover { background: #e2e8f0; transform: translateY(-1px); }
         .btn-upload input[type="file"] { display: none; }
 
         /* 右侧面板 */
@@ -158,8 +154,7 @@ if(__exports != exports)module.exports = exports;return module.exports}));
         .tab.active { color: #3b82f6; border-bottom-color: #3b82f6; background: #f8fafc; }
         .tab-content { flex: 1; padding: 16px; overflow-y: auto; display: none; flex-direction: column; gap: 12px; }
         .tab-content.active { display: flex; }
-
-        .card { background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 13px; color: #475569; transition: all 0.25s; }
+        .card { background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 13px; color: #475569; transition: 0.2s; }
         .card:hover { border-color: #3b82f6; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1); }
         .card.highlight { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); background: #eff6ff; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
@@ -167,29 +162,60 @@ if(__exports != exports)module.exports = exports;return module.exports}));
         .card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8; margin-top: 8px; }
         .btn-delete { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 12px; padding: 4px 8px; border-radius: 4px; }
         .btn-delete:hover { background: #fee2e2; }
-
         .badge { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
         .badge.pending { background: #fef3c7; color: #d97706; }
         .badge.processing { background: #dbeafe; color: #2563eb; }
         .badge.completed { background: #d1fae5; color: #059669; }
         .badge.failed { background: #fee2e2; color: #dc2626; }
-
         .empty-hint { color: #94a3b8; font-size: 13px; text-align: center; margin-top: 50px; line-height: 1.8; }
+
+        /* ==================== 新增：自定义模态框 ==================== */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; z-index: 999;
+            opacity: 0; transition: opacity 0.2s ease;
+        }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-content {
+            background: #ffffff; border-radius: 16px; padding: 24px;
+            width: 90%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: scale(0.95); transition: transform 0.2s ease;
+        }
+        .modal-overlay.show .modal-content { transform: scale(1); }
+        .modal-title { font-size: 18px; font-weight: 700; color: #1e293b; margin-bottom: 12px; }
+        .modal-message { font-size: 14px; color: #475569; line-height: 1.6; margin-bottom: 24px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
+        .modal-btn { padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; border: none; }
+        .modal-btn.cancel { background: #f1f5f9; color: #475569; }
+        .modal-btn.cancel:hover { background: #e2e8f0; }
+        .modal-btn.confirm { background: #ef4444; color: white; }
+        .modal-btn.confirm:hover { background: #dc2626; }
+        .modal-btn.confirm.primary { background: #3b82f6; }
+        .modal-btn.confirm.primary:hover { background: #2563eb; }
     </style>
 </head>
 <body>
     <header>
         <div>
             <div class="header-title">🛸 RAG <span class="accent">· AI 知识库</span></div>
-            <div class="header-sub">上传你的知识库文件，引用可溯源</div>
+            <div class="header-sub">多会话管理 · 引用可溯源</div>
         </div>
     </header>
 
     <div class="main-container">
-        <!-- 左侧聊天区 -->
+        <!-- 左侧会话侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="btn-new-chat" onclick="createNewConversation()">＋ 新建对话</button>
+            </div>
+            <div class="conversation-list" id="conversationList"></div>
+        </div>
+
+        <!-- 中间聊天区 -->
         <div class="chat-container">
             <div class="chat-history" id="chatContainer">
-                <div class="message ai">hello world</div>
+                <div class="message ai">你好！我是你的 AI 知识库助手。请选择或新建一个对话，然后向我提问。</div>
             </div>
             <div class="input-area">
                 <div class="upload-status" id="uploadStatus">
@@ -201,7 +227,7 @@ if(__exports != exports)module.exports = exports;return module.exports}));
                         📎
                         <input type="file" id="fileInput" accept=".pdf,.txt,.md,.docx" onchange="uploadFile()">
                     </label>
-                    <input type="text" id="queryInput" placeholder="请输入您的问题，比如：最新的平台违禁词是什么？" onkeydown="if(event.key === 'Enter') startChat()">
+                    <input type="text" id="queryInput" placeholder="请输入您的问题..." onkeydown="if(event.key === 'Enter') startChat()">
                     <button class="btn btn-send" id="sendBtn" onclick="startChat()">发送</button>
                 </div>
             </div>
@@ -220,7 +246,69 @@ if(__exports != exports)module.exports = exports;return module.exports}));
         </div>
     </div>
 
+    <!-- 自定义模态框 -->
+    <div class="modal-overlay" id="customModal">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTitle">提示</div>
+            <div class="modal-message" id="modalMessage">确定要删除吗？</div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" id="modalCancelBtn">取消</button>
+                <button class="modal-btn confirm" id="modalConfirmBtn">确定</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // ==================== 全局状态 ====================
+        let currentConversationId = null;
+        let isGenerating = false; // 👈 新增：防止重复发送的标志位
+
+        // ==================== 自定义弹窗封装 ====================
+        function showConfirm(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('customModal');
+                const title = document.getElementById('modalTitle');
+                const msg = document.getElementById('modalMessage');
+                const cancelBtn = document.getElementById('modalCancelBtn');
+                const confirmBtn = document.getElementById('modalConfirmBtn');
+
+                title.innerText = "操作确认";
+                msg.innerText = message;
+                cancelBtn.style.display = "block";
+                confirmBtn.className = "modal-btn confirm";
+
+                modal.classList.add('show');
+
+                const cleanUp = () => { modal.classList.remove('show'); };
+
+                const onCancel = () => { cleanUp(); resolve(false); cancelBtn.removeEventListener('click', onCancel); confirmBtn.removeEventListener('click', onConfirm); };
+                const onConfirm = () => { cleanUp(); resolve(true); cancelBtn.removeEventListener('click', onCancel); confirmBtn.removeEventListener('click', onConfirm); };
+
+                cancelBtn.addEventListener('click', onCancel);
+                confirmBtn.addEventListener('click', onConfirm);
+            });
+        }
+
+        function showAlert(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('customModal');
+                const title = document.getElementById('modalTitle');
+                const msg = document.getElementById('modalMessage');
+                const cancelBtn = document.getElementById('modalCancelBtn');
+                const confirmBtn = document.getElementById('modalConfirmBtn');
+
+                title.innerText = "提示";
+                msg.innerText = message;
+                cancelBtn.style.display = "none"; // 隐藏取消按钮
+                confirmBtn.className = "modal-btn confirm primary"; // 主色按钮
+
+                modal.classList.add('show');
+
+                const onConfirm = () => { modal.classList.remove('show'); resolve(true); confirmBtn.removeEventListener('click', onConfirm); };
+                confirmBtn.addEventListener('click', onConfirm);
+            });
+        }
+
         // ==================== 工具函数 ====================
         function escapeHtml(str) {
             const div = document.createElement('div');
@@ -228,7 +316,6 @@ if(__exports != exports)module.exports = exports;return module.exports}));
             return div.innerHTML;
         }
 
-        // 流式渲染保护：临时闭合未写完的 Markdown 标记，防止渲染崩坏
         function renderStreamingMarkdown(text) {
             let safe = text;
             const fences = (safe.match(/```/g) || []).length;
@@ -240,7 +327,6 @@ if(__exports != exports)module.exports = exports;return module.exports}));
             return marked.parse(safe);
         }
 
-        // 把正文里的 [编号] 变成可点击徽章（跳过代码块，避免误伤）
         function decorateRefs(html) {
             return html.split(/(<pre[\s\S]*?<\/pre>)/g).map(part => {
                 if (part.startsWith('<pre')) return part;
@@ -248,7 +334,6 @@ if(__exports != exports)module.exports = exports;return module.exports}));
             }).join('');
         }
 
-        // 点击徽章 → 跳到右侧来源并高亮
         function highlightSource(index) {
             switchTab('source');
             setTimeout(() => {
@@ -261,11 +346,9 @@ if(__exports != exports)module.exports = exports;return module.exports}));
             }, 50);
         }
 
-        // ==================== 标签页切换 ====================
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
             if (tabName === 'source') {
                 document.querySelector('.tab:nth-child(1)').classList.add('active');
                 document.getElementById('tabSource').classList.add('active');
@@ -276,18 +359,91 @@ if(__exports != exports)module.exports = exports;return module.exports}));
             }
         }
 
+        // ==================== 会话管理 ====================
+        async function loadConversations() {
+            try {
+                const res = await fetch('http://127.0.0.1:8000/api/v1/conversations');
+                const conversations = await res.json();
+                const list = document.getElementById('conversationList');
+                list.innerHTML = '';
+
+                conversations.forEach(conv => {
+                    const item = document.createElement('div');
+                    item.className = `conversation-item ${conv.id === currentConversationId ? 'active' : ''}`;
+                    item.innerHTML = `
+                        <span class="title">${escapeHtml(conv.title)}</span>
+                        <button class="btn-delete-conv" onclick="event.stopPropagation(); deleteConversation(${conv.id})">×</button>
+                    `;
+                    item.onclick = () => switchConversation(conv.id);
+                    list.appendChild(item);
+                });
+
+                // 👈 新增：首次加载时，自动进入最新的一条会话
+                if (currentConversationId === null && conversations.length > 0) {
+                    switchConversation(conversations[0].id);
+                }
+            } catch (e) { console.error('加载会话列表失败', e); }
+        }
+
+        async function createNewConversation() {
+            try {
+                const res = await fetch('http://127.0.0.1:8000/api/v1/conversations', { method: 'POST' });
+                const conv = await res.json();
+                currentConversationId = conv.id;
+                document.getElementById('chatContainer').innerHTML = `<div class="message ai">新对话已创建，请问有什么可以帮您？</div>`;
+                document.getElementById('tabSource').innerHTML = '<div class="empty-hint">提问后，这里会显示引用的文档片段</div>';
+                await loadConversations();
+            } catch (e) { await showAlert('创建会话失败'); }
+        }
+
+        async function switchConversation(id) {
+            currentConversationId = id;
+            document.getElementById('chatContainer').innerHTML = '';
+            document.getElementById('tabSource').innerHTML = '<div class="empty-hint">提问后，这里会显示引用的文档片段</div>';
+
+            try {
+                const res = await fetch(`http://127.0.0.1:8000/api/v1/conversations/${id}/messages`);
+                const messages = await res.json();
+                const container = document.getElementById('chatContainer');
+
+                if (messages.length === 0) {
+                    container.innerHTML = '<div class="message ai">新对话已创建，请问有什么可以帮您？</div>';
+                } else {
+                    messages.forEach(msg => {
+                        if (msg.role === 'user') {
+                            container.innerHTML += `<div class="message user">${escapeHtml(msg.content)}</div>`;
+                        } else {
+                            container.innerHTML += `<div class="message ai">${decorateRefs(renderStreamingMarkdown(msg.content))}</div>`;
+                        }
+                    });
+                }
+                container.scrollTop = container.scrollHeight;
+                await loadConversations();
+            } catch (e) { console.error('加载消息失败', e); }
+        }
+
+        async function deleteConversation(id) {
+            if (!(await showConfirm('确定删除此对话吗？'))) return;
+            try {
+                await fetch(`http://127.0.0.1:8000/api/v1/conversations/${id}`, { method: 'DELETE' });
+                if (currentConversationId === id) {
+                    currentConversationId = null;
+                    document.getElementById('chatContainer').innerHTML = '<div class="message ai">请选择或新建一个对话。</div>';
+                }
+                await loadConversations();
+            } catch (e) { await showAlert('删除失败'); }
+        }
+
         // ==================== 文件管理 ====================
         async function loadFiles() {
             try {
                 const res = await fetch('http://127.0.0.1:8000/api/v1/knowledge-bases/1/knowledge');
                 const files = await res.json();
                 const container = document.getElementById('tabFiles');
-
                 if (files.length === 0) {
                     container.innerHTML = '<div class="empty-hint">暂无文件<br>点击左下角 📎 上传</div>';
                     return;
                 }
-
                 container.innerHTML = files.map(f => `
                     <div class="card">
                         <div class="card-header">
@@ -300,19 +456,15 @@ if(__exports != exports)module.exports = exports;return module.exports}));
                         </div>
                     </div>
                 `).join('');
-            } catch (e) {
-                console.error('加载文件列表失败', e);
-            }
+            } catch (e) { console.error('加载文件列表失败', e); }
         }
 
         async function deleteFile(id) {
-            if (!confirm('确定要删除这个文件及其所有向量切片吗？')) return;
+            if (!(await showConfirm('确定要删除这个文件及其所有向量切片吗？'))) return;
             try {
                 await fetch(`http://127.0.0.1:8000/api/v1/knowledge/${id}`, { method: 'DELETE' });
                 loadFiles();
-            } catch (e) {
-                alert('删除失败: ' + e.message);
-            }
+            } catch (e) { await showAlert('删除失败: ' + e.message); }
         }
 
         // ==================== 文件上传与进度轮询 ====================
@@ -324,7 +476,6 @@ if(__exports != exports)module.exports = exports;return module.exports}));
             const statusDiv = document.getElementById('uploadStatus');
             const statusText = document.getElementById('statusText');
             const statusDot = document.getElementById('statusDot');
-
             statusDiv.classList.add('active');
             statusDot.className = 'status-dot processing';
             statusText.innerText = `正在上传《${file.name}》...`;
@@ -334,11 +485,9 @@ if(__exports != exports)module.exports = exports;return module.exports}));
 
             try {
                 const res = await fetch('http://127.0.0.1:8000/api/v1/knowledge-bases/1/knowledge/file', {
-                    method: 'POST',
-                    body: formData
+                    method: 'POST', body: formData
                 });
                 const data = await res.json();
-
                 if (data.id) {
                     statusText.innerText = `《${file.name}》已上传，等待后台解析...`;
                     pollStatus(data.id, file.name);
@@ -353,12 +502,10 @@ if(__exports != exports)module.exports = exports;return module.exports}));
         async function pollStatus(knowledgeId, fileName) {
             const statusText = document.getElementById('statusText');
             const statusDot = document.getElementById('statusDot');
-
             const interval = setInterval(async () => {
                 try {
                     const res = await fetch(`http://127.0.0.1:8000/api/v1/knowledge/${knowledgeId}/status`);
                     const data = await res.json();
-
                     if (data.parse_status === 'completed') {
                         statusText.innerText = `《${fileName}》解析完成，可以提问了！`;
                         statusDot.className = 'status-dot completed';
@@ -370,40 +517,49 @@ if(__exports != exports)module.exports = exports;return module.exports}));
                         statusDot.className = 'status-dot failed';
                         clearInterval(interval);
                     } else {
-                        statusText.innerText = `《${fileName}》正在解析中 (${data.parse_status})...`;
+                        statusText.innerText = `《${fileName}》正在解析中...`;
                     }
-                } catch (e) {
-                    console.error('轮询状态失败', e);
-                }
+                } catch (e) { console.error('轮询状态失败', e); }
             }, 2000);
         }
 
         // ==================== 聊天逻辑 ====================
         async function startChat() {
+            if (isGenerating) return;
+
             const input = document.getElementById('queryInput');
             const query = input.value.trim();
             if (!query) return;
+
+            // 没有对话时，自动创建
+            if (!currentConversationId) {
+                try {
+                    const res = await fetch('http://127.0.0.1:8000/api/v1/conversations', { method: 'POST' });
+                    const conv = await res.json();
+                    currentConversationId = conv.id;
+
+                    // 清空“请新建对话”的欢迎语
+                    document.getElementById('chatContainer').innerHTML = '';
+                    document.getElementById('tabSource').innerHTML = '<div class="empty-hint">提问后，这里会显示引用的文档片段</div>';
+
+                    // 刷新左侧列表，让新对话高亮显示
+                    await loadConversations();
+                } catch (e) {
+                    await showAlert("自动创建对话失败，请检查后台服务是否开启！");
+                    return;
+                }
+            }
 
             const chatContainer = document.getElementById('chatContainer');
             const sourceContainer = document.getElementById('tabSource');
             const sendBtn = document.getElementById('sendBtn');
 
-            // 收集历史（最近 10 条）
-            const history = [];
-            const messageElements = chatContainer.querySelectorAll('.message');
-            for (let i = 0; i < messageElements.length; i++) {
-                const msgEl = messageElements[i];
-                let content = msgEl.innerText.trim();
-                if (!content) continue;
-                const role = msgEl.classList.contains('user') ? 'user' : 'assistant';
-                history.push({ role, content });
-            }
-            const recentHistory = history.slice(-10);
+            isGenerating = true;
+            input.disabled = true;
+            sendBtn.disabled = true;
 
-            // 用户消息转义后渲染，防 XSS
             chatContainer.innerHTML += `<div class="message user">${escapeHtml(query)}</div>`;
             input.value = '';
-            sendBtn.disabled = true;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             const aiMsgId = 'msg-' + Date.now();
@@ -415,8 +571,6 @@ if(__exports != exports)module.exports = exports;return module.exports}));
             sourceContainer.innerHTML = '';
 
             let accumulatedText = '';
-
-            // 节流渲染：每 80ms 最多重绘一次
             let renderPending = false;
             const renderTimer = setInterval(() => {
                 if (!renderPending) return;
@@ -429,80 +583,71 @@ if(__exports != exports)module.exports = exports;return module.exports}));
                 const response = await fetch('http://127.0.0.1:8000/api/v1/chat/stream', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query, history: recentHistory })
+                    body: JSON.stringify({ query: query, conversation_id: currentConversationId })
                 });
 
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder('utf-8');
-                let buffer = ''; // SSE 解析缓冲区，防止跨 chunk 截断
+                let buffer = '';
 
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
-
-                    // 把新收到的数据追加到缓冲区
                     buffer += decoder.decode(value, { stream: true });
-
-                    // 用 \n\n 分割完整的 SSE 事件
                     const parts = buffer.split('\n\n');
-                    // 最后一部分可能是不完整的，留到下一次循环
                     buffer = parts.pop();
 
                     for (const part of parts) {
                         if (part.startsWith('data: ')) {
                             const dataStr = part.substring(6);
                             if (dataStr === '[DONE]') continue;
-
                             try {
                                 const dataObj = JSON.parse(dataStr);
-
-                                // 处理来源信息
                                 if (dataObj.sources) {
                                     if (dataObj.sources.length === 0) {
-                                        sourceContainer.innerHTML = '<div class="empty-hint">本条回答未引用知识库<br>完全来自大佬的专业经验</div>';
+                                        sourceContainer.innerHTML = '<div class="empty-hint">本条回答未引用知识库</div>';
                                     } else {
                                         sourceContainer.innerHTML = '';
                                         dataObj.sources.forEach(s => {
                                             sourceContainer.innerHTML += `
                                                 <div class="card" id="source-${s.index}">
                                                     <b style="color:#3b82f6;">[${s.index}]</b> ${escapeHtml(s.file_name)}
-                                                    <div class="card-meta">
-                                                        <span>📄 文档片段</span>
-                                                        <span>Chunk ID: ${s.chunk_id}</span>
-                                                    </div>
+                                                    <div class="card-meta"><span>📄 文档片段</span><span>Chunk ID: ${s.chunk_id}</span></div>
                                                 </div>
                                             `;
                                         });
                                     }
-                                }
-                                // 处理正文内容
-                                else if (dataObj.content) {
+                                } else if (dataObj.content) {
                                     accumulatedText += dataObj.content;
                                     renderPending = true;
                                 }
-                            } catch (e) {
-                                console.error('解析 SSE 数据失败:', e, '原始数据:', dataStr);
-                            }
+                            } catch (e) { console.error('解析 SSE 失败:', e, dataStr); }
                         }
                     }
                 }
             } catch (error) {
                 aiMsgDiv.innerHTML = `<span style="color: #ef4444;">⚠️ 请求失败: ${escapeHtml(error.message)}</span>`;
             } finally {
+                // 释放状态锁
+                isGenerating = false;
+                input.disabled = false;
+                sendBtn.disabled = false;
                 clearInterval(renderTimer);
-                // 流结束：移除光标，最终完整渲染一次
                 aiMsgDiv.classList.remove('typing-cursor');
                 if (accumulatedText) {
                     aiMsgDiv.innerHTML = decorateRefs(renderStreamingMarkdown(accumulatedText));
                 }
-                sendBtn.disabled = false;
                 input.focus();
+                loadConversations(); // 刷新左侧标题
             }
         }
 
-        window.onload = loadFiles;
+        window.onload = () => {
+            loadFiles();
+            loadConversations();
+        };
     </script>
 </body>
 </html>

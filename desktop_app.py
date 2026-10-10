@@ -29,25 +29,25 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.web_view)
 
         # 2. 创建顶部菜单栏
-        self.create_menu_bar()
+        # self.create_menu_bar()
 
-    def create_menu_bar(self):
-        menu_bar = self.menuBar()
-
-        # 【文件】菜单
-        file_menu = menu_bar.addMenu("文件")
-
-        # 【上传文档】动作
-        upload_action = QAction("📄 上传新文档", self)
-        upload_action.triggered.connect(self.upload_file)
-        file_menu.addAction(upload_action)
-
-        file_menu.addSeparator()  # 加一条分割线
-
-        # 【退出】动作
-        exit_action = QAction("退出应用", self)
-        exit_action.triggered.connect(self.close)
-        file_menu.addAction(exit_action)
+    # def create_menu_bar(self):
+    #     menu_bar = self.menuBar()
+    #
+    #     # 【文件】菜单
+    #     file_menu = menu_bar.addMenu("文件")
+    #
+    #     # 【上传文档】动作
+    #     upload_action = QAction("📄 上传新文档", self)
+    #     upload_action.triggered.connect(self.upload_file)
+    #     file_menu.addAction(upload_action)
+    #
+    #     file_menu.addSeparator()  # 加一条分割线
+    #
+    #     # 【退出】动作
+    #     exit_action = QAction("退出应用", self)
+    #     exit_action.triggered.connect(self.close)
+    #     file_menu.addAction(exit_action)
 
     def upload_file(self):
         """打开系统原生文件选择器，上传文件到 FastAPI"""

@@ -18,7 +18,7 @@ def get_embedding(text: str) -> list:
         )
         return response.data[0].embedding
     except Exception as e:
-        print(f"❌ 呼叫翻译官失败: {e}")
+        print(f"❌ 向量转换失败: {e}")
         return []
 
 def get_rerank(query: str, documents: list) -> list:
