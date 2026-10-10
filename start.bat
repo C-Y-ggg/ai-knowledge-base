@@ -1,23 +1,23 @@
 @echo off
 echo ========================================
-echo    æ­£åœ¨å¯åŠ¨ RAG æ™ºèƒ½çŸ¥è¯†åº“ç³»ç»Ÿ...
+echo    ÕıÔÚÆô¶¯ RAG ÖÇÄÜÖªÊ¶¿âÏµÍ³...
 echo ========================================
 
 echo.
-echo [1/3] æ­£åœ¨å¯åŠ¨ FastAPI åç«¯æœåŠ¡ (ç«¯å£ 8026)...
+echo [1/3] ÕıÔÚÆô¶¯ FastAPI ºó¶Ë·şÎñ (¶Ë¿Ú 8026)...
 start cmd /k "conda activate ai-dev && python -m uvicorn app.main:app --reload --port 8026"
 
 echo.
-echo [2/3] æ­£åœ¨å¯åŠ¨åå°å¼‚æ­¥ Worker...
+echo [2/3] ÕıÔÚÆô¶¯ºóÌ¨Òì²½ Worker...
 start cmd /k "conda activate ai-dev && python worker.py"
 
 echo.
-echo [3/3] æ­£åœ¨å¯åŠ¨æ¡Œé¢åº”ç”¨...
+echo [3/3] ÕıÔÚÆô¶¯×ÀÃæÓ¦ÓÃ...
 timeout /t 3 >nul
 start cmd /k "conda activate ai-dev && python desktop_app.py"
 
 echo.
 echo ========================================
-echo æ‰€æœ‰æœåŠ¡å·²å°è¯•å¯åŠ¨ï¼è¯·æ£€æŸ¥å„ä¸ªçª—å£çš„æ—¥å¿—ã€‚
+echo ËùÓĞ·şÎñÒÑ³¢ÊÔÆô¶¯£¡Çë¼ì²é¸÷¸ö´°¿ÚµÄÈÕÖ¾¡£
 echo ========================================
 pause
