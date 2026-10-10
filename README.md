@@ -2,6 +2,13 @@
 
 基于 FastAPI + PostgreSQL(pgvector) + Redis 构建的企业级 RAG（检索增强生成）智能问答系统。支持多格式文档上传、异步解析、向量化、重排序以及 SSE 流式打字机输出。配备基于 PySide6 的原生桌面客户端。
 
+## 🖼️ 界面预览
+
+<div align="center">
+  <img src="./assets/RAG-UI.png" alt="聊天界面" width="80%">
+  <p><i>智能问答界面：支持 Markdown 渲染、多会话管理和引用溯源</i></p>
+</div>
+
 ## ✨ 核心特性
 
 - **多格式文档解析**：支持 PDF、Word、Excel 的文本提取与切分。
