@@ -2,6 +2,7 @@ import redis
 import os
 import json
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from openai import OpenAI
 from dotenv import load_dotenv
 from . import models
@@ -9,20 +10,61 @@ from .llm_utils import get_embedding, get_rerank
 
 load_dotenv()
 
+# 连接 Redis
 r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 
+# ==================== 上传文件逻辑 ====================
 def create_knowledge_from_file(db: Session, file_name: str, file_path: str):
-    db_knowledge = models.Knowledge(file_name=file_name, file_path=file_path, parse_status="pending")
+    db_knowledge = models.Knowledge(
+        file_name=file_name,
+        file_path=file_path,
+        parse_status="pending"
+    )
     db.add(db_knowledge)
     db.commit()
     db.refresh(db_knowledge)
+
     r.lpush("knowledge_queue", db_knowledge.id)
     return db_knowledge
 
 
+# ==================== RRF 融合算法 ====================
+def rrf_fusion(vector_results: list, keyword_results: list, k: int = 60, top_n: int = 10):
+    """
+    RRF (Reciprocal Rank Fusion) 倒数排名融合算法
+
+    参数说明：
+    - vector_results: 向量检索返回的 Chunk 列表（已按相似度排序）
+    - keyword_results: 关键词检索返回的 Chunk 列表（已按相关度排序）
+    - k: 平滑参数，通常取 60。k 越大，排名靠后的文档得分衰减越慢。
+    - top_n: 最终返回几条
+
+    原理：
+    对于每个文档，它的得分 = 它在向量路中的 1/(k+排名) + 它在关键词路中的 1/(k+排名)
+    两路都排名靠前的文档，得分会叠加，脱颖而出。
+    """
+    scores = {}  # 记录每个 chunk_id 的总分
+    chunks_map = {}  # 记录每个 chunk_id 对应的 Chunk 对象
+
+    # 1. 向量检索的排名得分
+    for rank, chunk in enumerate(vector_results):
+        scores[chunk.id] = scores.get(chunk.id, 0) + 1.0 / (k + rank + 1)
+        chunks_map[chunk.id] = chunk
+
+    # 2. 关键词检索的排名得分
+    for rank, chunk in enumerate(keyword_results):
+        scores[chunk.id] = scores.get(chunk.id, 0) + 1.0 / (k + rank + 1)
+        chunks_map[chunk.id] = chunk
+
+    # 3. 按总分降序排序，取 Top N
+    sorted_chunk_ids = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)[:top_n]
+    return [chunks_map[cid] for cid in sorted_chunk_ids]
+
+
+# ==================== 问答逻辑（RAG 核心） ====================
 def chat_stream_with_knowledge_base(db: Session, query: str, conversation_id: int = None, history: list = None):
-    """流式问答生成器（支持数据库会话历史 + 引用溯源 + 重排序）"""
+    """流式问答生成器（混合检索 + 重排序 + 优雅降级）"""
 
     # 1. 如果传了 conversation_id，从数据库获取历史记录
     if conversation_id:
@@ -30,17 +72,16 @@ def chat_stream_with_knowledge_base(db: Session, query: str, conversation_id: in
             models.Message.conversation_id == conversation_id
         ).order_by(models.Message.id.asc()).all()
 
-        # 只取最近 10 条作为上下文
         history = [{"role": msg.role, "content": msg.content} for msg in past_messages[-10:]]
 
-        # 如果该会话是第一条消息，自动生成标题
+        # 第一条消息自动生成标题
         if len(past_messages) == 0:
             conv = db.query(models.Conversation).filter(models.Conversation.id == conversation_id).first()
             if conv:
                 conv.title = query[:15] + ("..." if len(query) > 15 else "")
                 db.commit()
 
-        # 把当前用户消息存进数据库
+        # 存用户消息
         user_msg = models.Message(conversation_id=conversation_id, role="user", content=query)
         db.add(user_msg)
         db.commit()
@@ -54,16 +95,29 @@ def chat_stream_with_knowledge_base(db: Session, query: str, conversation_id: in
         yield "data: [DONE]\n\n"
         return
 
-    # 3. 雷达扫描与重排序
-    top_chunks = db.query(models.Chunk).order_by(
+    # ==================== 混合检索（核心！） ====================
+    # 第 1 路：向量检索（粗筛 20 条）
+    vector_chunks = db.query(models.Chunk).order_by(
         models.Chunk.embedding.cosine_distance(query_vector)
     ).limit(20).all()
+
+    # 第 2 路：关键词检索（粗筛 20 条）
+    # 用 PostgreSQL 的 ILIKE 做模糊匹配。query 中的特殊字符需要转义。
+    # 这里为了简单，直接使用 ILIKE。生产环境可用 to_tsquery 或 Elasticsearch。
+    keyword_chunks = db.query(models.Chunk).filter(
+        models.Chunk.content.ilike(f"%{query}%")
+    ).limit(20).all()
+
+    # RRF 融合两路结果，取 10 条作为候选
+    top_chunks = rrf_fusion(vector_chunks, keyword_chunks, k=60, top_n=10)
 
     if not top_chunks:
         yield f"data: {json.dumps({'content': '抱歉，知识库中还没有相关内容，请先上传文档。'}, ensure_ascii=False)}\n\n"
         yield "data: [DONE]\n\n"
         return
+    # ============================================================
 
+    # 3. 重排序（精排，挑出最相关的 3 条）
     documents = [c.content for c in top_chunks]
     reranked_results = get_rerank(query, documents)
 
@@ -116,14 +170,14 @@ def chat_stream_with_knowledge_base(db: Session, query: str, conversation_id: in
 {query}
 """
 
-    # 5. 呼叫llm，开启流式模式
+    # 5. 呼叫大厨
     llm_client = OpenAI(
         api_key=os.getenv("ZHIPU_API_KEY"),
         base_url="https://open.bigmodel.cn/api/paas/v4/",
         timeout=15.0
     )
 
-    full_response = ""  # 用于存库
+    full_response = ""
     try:
         response = llm_client.chat.completions.create(
             model="glm-5.3-flash",
@@ -138,7 +192,7 @@ def chat_stream_with_knowledge_base(db: Session, query: str, conversation_id: in
                 full_response += content
                 yield f"data: {json.dumps({'content': content}, ensure_ascii=False)}\n\n"
 
-        # 6. 存库：将 AI 的回答保存到数据库
+        # 存档AI回答
         if conversation_id and full_response:
             ai_msg = models.Message(conversation_id=conversation_id, role="assistant", content=full_response)
             db.add(ai_msg)
@@ -148,5 +202,5 @@ def chat_stream_with_knowledge_base(db: Session, query: str, conversation_id: in
         yield "data: [DONE]\n\n"
 
     except Exception as e:
-        yield f"data: {json.dumps({'content': f'处理失败: {e}'}, ensure_ascii=False)}\n\n"
+        yield f"data: {json.dumps({'content': f'大厨炒菜失败: {e}'}, ensure_ascii=False)}\n\n"
         yield "data: [DONE]\n\n"
