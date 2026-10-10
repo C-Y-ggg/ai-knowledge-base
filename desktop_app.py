@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
 
         # 发送 HTTP 请求到你的 FastAPI 后端
         try:
-            url = "http://127.0.0.1:8000/api/v1/knowledge-bases/1/knowledge/file"
+            url = "http://127.0.0.1:8026/api/v1/knowledge-bases/1/knowledge/file"
             with open(file_path, "rb") as f:
                 files = {"file": (file_name, f, "application/octet-stream")}
                 response = httpx.post(url, files=files, timeout=30.0)

@@ -362,7 +362,7 @@ if(__exports != exports)module.exports = exports;return module.exports}));
         // ==================== 会话管理 ====================
         async function loadConversations() {
             try {
-                const res = await fetch('http://127.0.0.1:8000/api/v1/conversations');
+                const res = await fetch('http://127.0.0.1:8026/api/v1/conversations');
                 const conversations = await res.json();
                 const list = document.getElementById('conversationList');
                 list.innerHTML = '';
@@ -387,7 +387,7 @@ if(__exports != exports)module.exports = exports;return module.exports}));
 
         async function createNewConversation() {
             try {
-                const res = await fetch('http://127.0.0.1:8000/api/v1/conversations', { method: 'POST' });
+                const res = await fetch('http://127.0.0.1:8026/api/v1/conversations', { method: 'POST' });
                 const conv = await res.json();
                 currentConversationId = conv.id;
                 document.getElementById('chatContainer').innerHTML = `<div class="message ai">新对话已创建，请问有什么可以帮您？</div>`;
@@ -402,7 +402,7 @@ if(__exports != exports)module.exports = exports;return module.exports}));
             document.getElementById('tabSource').innerHTML = '<div class="empty-hint">提问后，这里会显示引用的文档片段</div>';
 
             try {
-                const res = await fetch(`http://127.0.0.1:8000/api/v1/conversations/${id}/messages`);
+                const res = await fetch(`http://127.0.0.1:8026/api/v1/conversations/${id}/messages`);
                 const messages = await res.json();
                 const container = document.getElementById('chatContainer');
 
@@ -425,7 +425,7 @@ if(__exports != exports)module.exports = exports;return module.exports}));
         async function deleteConversation(id) {
             if (!(await showConfirm('确定删除此对话吗？'))) return;
             try {
-                await fetch(`http://127.0.0.1:8000/api/v1/conversations/${id}`, { method: 'DELETE' });
+                await fetch(`http://127.0.0.1:8026/api/v1/conversations/${id}`, { method: 'DELETE' });
                 if (currentConversationId === id) {
                     currentConversationId = null;
                     document.getElementById('chatContainer').innerHTML = '<div class="message ai">请选择或新建一个对话。</div>';
@@ -437,7 +437,7 @@ if(__exports != exports)module.exports = exports;return module.exports}));
         // ==================== 文件管理 ====================
         async function loadFiles() {
             try {
-                const res = await fetch('http://127.0.0.1:8000/api/v1/knowledge-bases/1/knowledge');
+                const res = await fetch('http://127.0.0.1:8026/api/v1/knowledge-bases/1/knowledge');
                 const files = await res.json();
                 const container = document.getElementById('tabFiles');
                 if (files.length === 0) {
@@ -462,7 +462,7 @@ if(__exports != exports)module.exports = exports;return module.exports}));
         async function deleteFile(id) {
             if (!(await showConfirm('确定要删除这个文件及其所有向量切片吗？'))) return;
             try {
-                await fetch(`http://127.0.0.1:8000/api/v1/knowledge/${id}`, { method: 'DELETE' });
+                await fetch(`http://127.0.0.1:8026/api/v1/knowledge/${id}`, { method: 'DELETE' });
                 loadFiles();
             } catch (e) { await showAlert('删除失败: ' + e.message); }
         }
@@ -484,7 +484,7 @@ if(__exports != exports)module.exports = exports;return module.exports}));
             formData.append('file', file);
 
             try {
-                const res = await fetch('http://127.0.0.1:8000/api/v1/knowledge-bases/1/knowledge/file', {
+                const res = await fetch('http://127.0.0.1:8026/api/v1/knowledge-bases/1/knowledge/file', {
                     method: 'POST', body: formData
                 });
                 const data = await res.json();
@@ -504,7 +504,7 @@ if(__exports != exports)module.exports = exports;return module.exports}));
             const statusDot = document.getElementById('statusDot');
             const interval = setInterval(async () => {
                 try {
-                    const res = await fetch(`http://127.0.0.1:8000/api/v1/knowledge/${knowledgeId}/status`);
+                    const res = await fetch(`http://127.0.0.1:8026/api/v1/knowledge/${knowledgeId}/status`);
                     const data = await res.json();
                     if (data.parse_status === 'completed') {
                         statusText.innerText = `《${fileName}》解析完成，可以提问了！`;
@@ -534,7 +534,7 @@ if(__exports != exports)module.exports = exports;return module.exports}));
             // 没有对话时，自动创建
             if (!currentConversationId) {
                 try {
-                    const res = await fetch('http://127.0.0.1:8000/api/v1/conversations', { method: 'POST' });
+                    const res = await fetch('http://127.0.0.1:8026/api/v1/conversations', { method: 'POST' });
                     const conv = await res.json();
                     currentConversationId = conv.id;
 
@@ -580,7 +580,7 @@ if(__exports != exports)module.exports = exports;return module.exports}));
             }, 80);
 
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/v1/chat/stream', {
+                const response = await fetch('http://127.0.0.1:8026/api/v1/chat/stream', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ query: query, conversation_id: currentConversationId })
