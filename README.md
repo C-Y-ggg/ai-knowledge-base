@@ -1,3 +1,8 @@
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.142.0-green)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
+![Redis](https://img.shields.io/badge/Redis-7-red)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 # 📚 RAG 智能知识库问答系统 (AI Knowledge Base)
 
 基于 FastAPI + PostgreSQL(pgvector) + Redis 构建的企业级 RAG（检索增强生成）智能问答系统。支持多格式文档上传、异步解析、向量化、重排序以及 SSE 流式打字机输出。配备基于 PySide6 的原生桌面客户端。
