@@ -6,6 +6,7 @@ from .database import Base
 class Knowledge(Base):
     __tablename__ = "knowledge"
     id = Column(Integer, primary_key=True, index=True)
+    kb_id = Column(Integer, index=True, default=1)
     file_name = Column(String, index=True)
     file_path = Column(String)
     parse_status = Column(String, default="pending")

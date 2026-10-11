@@ -15,6 +15,7 @@ class KnowledgeResponse(BaseModel):
 class ChatRequest(BaseModel):
     query: str
     conversation_id: Optional[int] = None # 如果是新对话，不传此字段
+    kb_id: int = 1
 
 # 👇 新增：会话相关 Schema
 class ConversationResponse(BaseModel):

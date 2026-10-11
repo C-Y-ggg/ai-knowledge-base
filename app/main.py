@@ -14,7 +14,14 @@ app = FastAPI(title="AI Knowledge Base API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    # 本地测试凭证
+    allow_origins=[
+        "null",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,16 +44,39 @@ def upload_knowledge_file(kb_id: int, file: UploadFile = File(...), db: Session 
     file_path = os.path.join(UPLOAD_DIR, unique_filename)
     with open(file_path, "wb") as buffer:
         buffer.write(file.file.read())
-    result = service.create_knowledge_from_file(db, file.filename, file_path)
+    result = service.create_knowledge_from_file(db, file.filename, file_path,kb_id=kb_id)
     return result
 
-
 @app.get("/api/v1/knowledge-bases/{kb_id}/knowledge")
-def list_knowledge_files(kb_id: int, db: Session = Depends(get_db)):
-    files = db.query(models.Knowledge).order_by(models.Knowledge.id.desc()).all()
-    return [{"id": f.id, "file_name": f.file_name, "parse_status": f.parse_status, "created_at": f.created_at} for f in
-            files]
+def list_knowledge_files(
+    kb_id: int,
+    db: Session = Depends(get_db)
+):
+    files = (
+        db.query(models.Knowledge)
+        .filter(models.Knowledge.kb_id == kb_id)
+        .order_by(models.Knowledge.id.desc())
+        .all()
+    )
+    return [
+        {
+            "id": f.id,
+            "file_name": f.file_name,
+            "parse_status": f.parse_status,
+            "created_at": f.created_at
+        }
+        for f in files
+    ]
 
+@app.delete("/api/v1/knowledge/{knowledge_id}")
+def delete_knowledge(knowledge_id: int, db: Session = Depends(get_db)):
+    knowledge = db.query(models.Knowledge).filter(models.Knowledge.id == knowledge_id).first()
+    if knowledge:
+        db.query(models.Chunk).filter(models.Chunk.knowledge_id == knowledge_id).delete()
+        db.delete(knowledge)
+        db.commit()
+        return {"message": "删除成功"}
+    return {"error": "文件不存在"}
 
 @app.get("/api/v1/knowledge/{knowledge_id}/status")
 def get_knowledge_status(knowledge_id: int, db: Session = Depends(get_db)):
@@ -54,17 +84,6 @@ def get_knowledge_status(knowledge_id: int, db: Session = Depends(get_db)):
     if not knowledge:
         return {"error": "文件不存在"}
     return {"id": knowledge.id, "parse_status": knowledge.parse_status}
-
-
-@app.delete("/api/v1/knowledge/{knowledge_id}")
-def delete_knowledge(knowledge_id: int, db: Session = Depends(get_db)):
-    db.query(models.Chunk).filter(models.Chunk.knowledge_id == knowledge_id).delete()
-    knowledge = db.query(models.Knowledge).filter(models.Knowledge.id == knowledge_id).first()
-    if knowledge:
-        db.delete(knowledge)
-        db.commit()
-        return {"message": "删除成功"}
-    return {"error": "文件不存在"}
 
 
 # ==================== 会话管理接口 ====================
@@ -104,7 +123,7 @@ def delete_conversation(conversation_id: int, db: Session = Depends(get_db)):
 @app.post("/api/v1/chat/stream")
 def chat_stream(request: schemas.ChatRequest, db: Session = Depends(get_db)):
     return StreamingResponse(
-        service.chat_stream_with_knowledge_base(db, request.query, request.conversation_id),
+        service.chat_stream_with_knowledge_base(db, request.query, request.conversation_id, kb_id=request.kb_id),
         media_type="text/event-stream"
     )
 
@@ -135,6 +154,8 @@ def openai_compatible_chat(request: dict, db: Session = Depends(get_db)):
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")
+
+
 
 
 if __name__ == "__main__":
