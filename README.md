@@ -32,7 +32,26 @@
 - **数据库**： PostgreSQL + pgvector
 - **消息队列**：Redis
 - **文档解析**：PyMuPDF, python-docx, pandas
-- **大模型**：智谱 GLM-5.3-Flash (对话) + 硅基流动 BAAI/bge-m3 (向量化) + BAAI/bge-reranker-v2-m3 (重排序)
+- **大模型**：智谱 GLM-5.3-Flash (LLM) + 硅基流动 BAAI/bge-m3 (embedding) + BAAI/bge-reranker-v2-m3 (重排序)
+
+## 📊 性能评估
+
+本项目通过标准化测试集对 RAG 系统进行了量化评估（测试集见 `eval/test_set.json`）。
+
+| 指标            | 数值    |
+|---------------|-------|
+| LLM           | glm-5.3-flash |
+| Embedding     | BAAI/bge-m3 |
+| Rerank        | BAAI/bge-reranker-v2-m3 |
+| 总用例数          | 15    |
+| 总通过率          | 73.3% |
+| 知识库内通过率       | 70%   |
+| 知识库外拒答率       | 100%  |
+| 平均首字延迟 (TTFT) | 4.83s |
+| 平均总耗时         | 6.36s |
+| 引用来源覆盖率       | 66.7% |
+
+> 评估方法：基于关键词命中和拒答逻辑自动打分。运行 `python eval/benchmark.py` 可复现结果。
 
 ## 🚀 快速启动
 

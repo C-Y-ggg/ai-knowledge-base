@@ -1,0 +1,107 @@
+[
+  {
+    "id": 1,
+    "category": "知识库内",
+    "question": "游戏立项时，游戏类型选型可以多选吗？",
+    "expected_keywords": ["多品类混搭", "多选"],
+    "should_reject": false
+  },
+  {
+    "id": 2,
+    "category": "知识库内",
+    "question": "开发周期超过30个工作日需要什么额外材料？",
+    "expected_keywords": ["分项工期附表", "延期说明", "项目经理签字"],
+    "should_reject": false
+  },
+  {
+    "id": 3,
+    "category": "知识库内",
+    "question": "游戏音效可选哪些音频格式？",
+    "expected_keywords": ["MP3", "WAV", "OGG"],
+    "should_reject": false
+  },
+  {
+    "id": 4,
+    "category": "知识库内",
+    "question": "地图物件资源表包含哪些字段？",
+    "expected_keywords": ["物件名称", "像素尺寸", "帧动画", "属性数值"],
+    "should_reject": false
+  },
+  {
+    "id": 5,
+    "category": "知识库内",
+    "question": "项目验收标准分为哪几类？",
+    "expected_keywords": ["功能验收", "美术验收", "数值验收"],
+    "should_reject": false
+  },
+  {
+    "id": 6,
+    "category": "知识库内",
+    "question": "游戏世界观与剧情设定包括哪几个方面？",
+    "expected_keywords": ["时代背景", "主线剧情", "场景设定"],
+    "should_reject": false
+  },
+  {
+    "id": 7,
+    "category": "知识库内",
+    "question": "游戏开发平台有哪些可选？",
+    "expected_keywords": ["团结", "虚幻", "安卓", "iOS", "Steam"],
+    "should_reject": false
+  },
+  {
+    "id": 8,
+    "category": "知识库内",
+    "question": "数值计算公式通常包括哪些内容？",
+    "expected_keywords": ["升级经验", "伤害结算", "防御减伤", "暴击"],
+    "should_reject": false
+  },
+  {
+    "id": 9,
+    "category": "知识库内",
+    "question": "游戏角色图素表中需要填写哪些信息？",
+    "expected_keywords": ["尺寸", "GIF", "攻击力", "防御力"],
+    "should_reject": false
+  },
+  {
+    "id": 10,
+    "category": "知识库内",
+    "question": "商业化变现模式有哪些选择？",
+    "expected_keywords": ["买断", "广告变现", "内购"],
+    "should_reject": false
+  },
+  {
+    "id": 11,
+    "category": "知识库外",
+    "question": "今天深圳的天气怎么样？",
+    "expected_keywords": ["无法回答", "未找到"],
+    "should_reject": true
+  },
+  {
+    "id": 12,
+    "category": "知识库外",
+    "question": "请帮我写一段快速排序的Python代码。",
+    "expected_keywords": ["无法回答", "未找到"],
+    "should_reject": true
+  },
+  {
+    "id": 13,
+    "category": "知识库外",
+    "question": "推荐几个深圳好吃的餐厅。",
+    "expected_keywords": ["无法回答", "未找到"],
+    "should_reject": true
+  },
+  {
+    "id": 14,
+    "category": "误导性",
+    "question": "开发周期15个工作日以内需要项目经理签字确认吗？",
+    "expected_keywords": ["不需要", "不用", "无需"],
+    "should_reject": false
+  },
+  {
+    "id": 15,
+    "category": "误导性",
+    "question": "游戏音效只能用MP3格式对吗？",
+    "expected_keywords": ["不是", "不对", "WAV", "OGG"],
+    "should_reject": false
+  }
+]
