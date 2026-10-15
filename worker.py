@@ -64,14 +64,31 @@ def extract_text_from_file(file_path: str) -> str:
         return ""
 
 def split_text_into_chunks(text: str, chunk_size: int = 500, overlap: int = 50) -> list:
+    """改进版：按段落优先切分，避免切断表格和标题"""
+    # 先按双换行（段落）切分
+    paragraphs = text.split("\n\n")
     chunks = []
-    start = 0
-    text_len = len(text)
-    while start < text_len:
-        end = start + chunk_size
-        chunk = text[start:end]
-        chunks.append(chunk.strip())
-        start += (chunk_size - overlap)
+    current_chunk = ""
+
+    for para in paragraphs:
+        # 如果单段落本身就超过 chunk_size，直接切
+        if len(para) > chunk_size:
+            if current_chunk:
+                chunks.append(current_chunk.strip())
+                current_chunk = ""
+            # 长段落内部按 chunk_size 切
+            for i in range(0, len(para), chunk_size - overlap):
+                chunks.append(para[i:i + chunk_size].strip())
+        # 如果加上这一段会超长，先保存当前块
+        elif len(current_chunk) + len(para) > chunk_size:
+            chunks.append(current_chunk.strip())
+            current_chunk = para
+        else:
+            current_chunk += "\n\n" + para
+
+    if current_chunk.strip():
+        chunks.append(current_chunk.strip())
+
     return [c for c in chunks if c]
 
 

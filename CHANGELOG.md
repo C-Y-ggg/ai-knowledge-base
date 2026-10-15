@@ -2,7 +2,19 @@
 
 本项目遵循 [Semantic Versioning](https://semver.org/)（语义化版本）规范。
 
-## [v1.0.0] - 2026-10-11
+## [v1.2.0] - 2026-10-15
+
+### ✨ Features
+- 新增 RAG 评估体系（eval/test_set.json + eval/benchmark.py），支持标准化测试集自动打分
+- 新增评估报告生成，输出总通过率、知识库内/外通过率、TTFT、引用覆盖率等指标
+
+### 🔧 Changed
+- 优化 Rerank 相关性阈值，提升知识库内问题的召回率
+
+### 📝 Docs
+- 更新 README，补充性能评估数据章节
+
+## [v1.1.0] - 2026-10-11
 
 ### ✨ Features
 - 实现知识库级别数据隔离（`kb_id` 全链路过滤：上传、列表、删除、向量检索、关键词检索）。
@@ -35,3 +47,4 @@
 - 完善 README 保姆级快速启动指南。
 - 增加 `docker-compose.yml` 和 `init.sql` 实现数据库一键部署。
 - 补充 `start.bat` 一键启动脚本。
+- 
